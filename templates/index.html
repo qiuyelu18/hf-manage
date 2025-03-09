@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - HF Space Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'ZCOOL QingKe HuangYou', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #ffe6f2;
+            background-image: url("https://cdn.jsdelivr.net/gh/app-generator/static/backgrounds/anime-bg-1.jpg");
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #ff66b2;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            letter-spacing: 1px;
+        }
+
+        form {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(255, 102, 178, 0.2);
+            width: 100%;
+            max-width: 400px;
+            border: 3px solid #ffb3d9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        form::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: #ffb3d9;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        form::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 100px;
+            height: 100px;
+            background: #b3e0ff;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ff66b2;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #ffb3d9;
+            border-radius: 15px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #ff66b2;
+            box-shadow: 0 0 10px rgba(255, 102, 178, 0.3);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #ff66b2;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(255, 102, 178, 0.3);
+        }
+
+        button:hover {
+            background: #ff99cc;
+            transform: translateY(-2px);
+        }
+
+        button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        button:hover::after {
+            left: 100%;
+        }
+
+        .error-message {
+            color: #ff3b7d;
+            margin-bottom: 1rem;
+            text-align: center;
+            background: rgba(255, 235, 240, 0.8);
+            padding: 0.5rem;
+            border-radius: 10px;
+            border: 1px solid #ffcce0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #ffffff;
+            font-size: 0.9rem;
+            background: rgba(255, 102, 178, 0.7);
+            border-top: 1px solid #ffb3d9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer a {
+            color: #ffffff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            color: #b3e0ff;
+            text-decoration: underline;
+        }
+
+        /* 樱花飘落效果 */
+        .sakura {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: url("https://i.imgur.com/ylYQ5Es.png") no-repeat;
+            background-size: 100% 100%;
+            pointer-events: none;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(100px, 100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">✨ HF Space Manager ✨</div>
+        <form method="post">
+            <div class="form-group">
+                <label for="username">✧ 用户名</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">✧ 密码</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+            <button type="submit">登录</button>
+        </form>
+    </div>
+
+    <footer class="footer">
+        <a href="https://github.com/ssfun/hf-space-manager">✨ HF Space Manager ✨</a> 由<a href="https://github.com/ssfun">ssfun</a> 构建，源代码遵循
+        <a href="https://opensource.org/license/mit">MIT 协议</a>
+    </footer>
+
+    <script>
+        // 樱花飘落效果
+        function createSakura() {
+            const sakura = document.createElement('div');
+            sakura.className = 'sakura';
+            sakura.style.left = Math.random() * window.innerWidth + 'px';
+            sakura.style.animationDuration = Math.random() * 10 + 5 + 's';
+            sakura.style.opacity = Math.random() * 0.5 + 0.3;
+            sakura.style.transform = `scale(${Math.random() * 0.5 + 0.5})`;
+            document.body.appendChild(sakura);
+
+            setTimeout(() => {
+                sakura.remove();
+            }, 15000);
+        }
+
+        // 每300ms创建一个樱花
+        setInterval(createSakura, 300);
+    </script>
+</body>
+</html>

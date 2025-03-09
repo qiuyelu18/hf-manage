@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>操作结果 - HF Space Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'ZCOOL QingKe HuangYou', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #ffe6f2;
+            background-image: url("https://cdn.jsdelivr.net/gh/app-generator/static/backgrounds/anime-bg-2.jpg");
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2.5rem;
+            border-radius: 25px;
+            box-shadow: 0 8px 32px rgba(255, 102, 178, 0.2);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            border: 3px solid #ffb3d9;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: #ffb3d9;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .result-card::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 100px;
+            height: 100px;
+            background: #b3e0ff;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .message {
+            color: #9966cc;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .message::before {
+            content: "✧✧✧";
+            display: block;
+            color: #ff99cc;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 0.75rem 1.8rem;
+            background: #ff66b2;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 15px rgba(255, 102, 178, 0.3);
+        }
+
+        .back-button:hover {
+            background: #ff99cc;
+            transform: translateY(-3px);
+        }
+
+        .back-button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .back-button:hover::after {
+            left: 100%;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #ffffff;
+            font-size: 0.9rem;
+            background: rgba(153, 102, 204, 0.7);
+            border-top: 1px solid #d9b3ff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer a {
+            color: #ffe6f7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            color: #ffb3e6;
+            text-decoration: underline;
+        }
+
+        /* 小花瓣动画 */
+        .petal {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-image: url('https://i.imgur.com/NKJBFZ4.png');
+            background-size: contain;
+            pointer-events: none;
+            animation: floatDown linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes floatDown {
+            0% {
+                transform: translate(0, -20px) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(100px, 100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="result-card">
+            <div class="message">{{ message }}</div>
+            <a href="/dashboard" class="back-button">返回控制面板</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <a href="https://github.com/ssfun/hf-space-manager">✨ HF Space Manager ✨</a> 由 
+        <a href="https://github.com/ssfun">ssfun</a> 构建，源代码遵循
+        <a href="https://opensource.org/license/mit">MIT 协议</a>
+    </footer>
+
+    <script>
+        // 添加花瓣动画
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            petal.style.left = Math.random() * window.innerWidth + 'px';
+            petal.style.animationDuration = Math.random() * 8 + 4 + 's';
+            petal.style.opacity = Math.random() * 0.5 + 0.3;
+            petal.style.transform = `scale(${Math.random() * 0.6 + 0.4})`;
+            document.body.appendChild(petal);
+
+            setTimeout(() => {
+                petal.remove();
+            }, 12000);
+        }
+
+        // 每500ms创建一个花瓣
+        setInterval(createPetal, 500);
+    </script>
+</body>
+</html>

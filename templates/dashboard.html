@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HF Space Manager -控制面板</title>
+    <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'ZCOOL QingKe HuangYou', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0e6ff;
+            background-image: url("https://cdn.jsdelivr.net/gh/app-generator/static/backgrounds/anime-bg-3.jpg");
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(186, 104, 200, 0.2);
+            z-index: 1000;
+            border-bottom: 3px solid #d9b3ff;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: #9966cc;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(153, 102, 204, 0.2);
+        }
+
+        .logout {
+            background: #ff99cc;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(255, 153, 204, 0.3);
+        }
+
+        .logout:hover {
+            background: #ff66b2;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            flex: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 100px auto 0;
+            padding: 0 2rem 2rem;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(252, 228, 236, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            background-image: url('https://i.imgur.com/YlLLbXw.gif');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            color: #ff66b2;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .owner-section {
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 25px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px rgba(153, 102, 204, 0.15);
+            border: 3px solid #d9b3ff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .owner-section::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: #ffb3d9;
+            border-radius: 50%;
+            opacity: 0.2;
+        }
+
+        .owner-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #9966cc;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px dashed #d9b3ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .space-count {
+            font-size: 1rem;
+            color: #b380ff;
+        }
+
+        .space-status-count {
+            margin-left: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 3px 8px;
+            border-radius: 10px;
+            border: 1px solid #e6ccff;
+        }
+
+        .space-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+        }
+
+        .space-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(153, 102, 204, 0.15);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #e6ccff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .space-card::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, transparent 70%, #ffb3d9 100%);
+            border-radius: 0 0 20px 0;
+        }
+
+        .space-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(153, 102, 204, 0.25);
+            border-color: #d9b3ff;
+        }
+
+        .space-name {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #9966cc;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed #e6ccff;
+        }
+
+        .space-info {
+            font-size: 0.95rem;
+            color: #8c66b2;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .space-info p {
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .space-info p::before {
+            content: "♥";
+            margin-right: 8px;
+            color: #ff99cc;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-BUILDING {
+            background-color: #ffcc66;
+            color: white;
+        }
+
+        .status-RUNNING {
+            background-color: #66cc99;
+            color: white;
+        }
+
+        .status-SLEEPING {
+            background-color: #6699ff;
+            color: white;
+        }
+
+        .status-STOPPED {
+            background-color: #b3b3cc;
+            color: white;
+        }
+
+        .status-FAILED {
+            background-color: #ff6666;
+            color: white;
+        }
+
+        .status-BUILD_ERROR {
+            background-color: #ff6666;
+            color: white;
+        }
+
+        .status-UNKNOWN {
+            background-color: #b3b3cc;
+            color: white;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+            margin-top: auto;
+        }
+
+        .action-button {
+            padding: 8px 12px;
+            border-radius: 20px;
+            border: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .view {
+            background: #b3e0ff;
+            color: #0073b3;
+        }
+
+        .view:hover {
+            background: #80ccff;
+            transform: translateY(-2px);
+        }
+
+        .restart {
+            background: #ff99cc;
+            color: white;
+        }
+
+        .restart:hover {
+            background: #ff66b2;
+            transform: translateY(-2px);
+        }
+
+        .rebuild {
+            background: #cc99ff;
+            color: white;
+        }
+
+        .rebuild:hover {
+            background: #b366ff;
+            transform: translateY(-2px);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+            font-size: 0.9rem;
+            background: rgba(153, 102, 204, 0.7);
+            border-top: 1px solid #d9b3ff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer a {
+            color: #ffe6f7;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            color: #ffb3e6;
+            text-decoration: underline;
+        }
+
+        /* 动画元素 */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .tag {
+            display: inline-block;
+            margin-right: 5px;
+            padding: 2px 8px;
+            background: #e6ccff;
+            color: #8c66b2;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .owner-name {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .space-count {
+                margin-top: 0.8rem;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .space-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">少女祈祷中...</div>
+    </div>
+
+    <header class="header">
+        <h1>✨ HF Space Manager ✨</h1>
+        <a href="/logout" class="logout">退出登录</a>
+    </header>
+
+    <div class="container">
+        {% if spaces %}
+            {% set grouped_spaces = {} %}
+            {% for space in spaces %}
+                {% if space.owner not in grouped_spaces %}
+                    {% set _ = grouped_spaces.update({space.owner: []}) %}
+                {% endif %}
+                {% set _ = grouped_spaces[space.owner].append(space) %}
+            {% endfor %}
+
+            {% for owner, owner_spaces in grouped_spaces.items() %}
+                {% set sorted_spaces = owner_spaces %}
+                {% set running_count = sorted_spaces | selectattr('status','equalto','RUNNING') | list | length %}
+                {% set building_count = sorted_spaces | selectattr('status','equalto','BUILDING') | list | length %}
+                {% set sleeping_count = sorted_spaces | selectattr('status','equalto','SLEEPING') | list | length %}
+                {% set stopped_count = sorted_spaces | selectattr('status','equalto','STOPPED') | list | length %}
+                {% set failed_count = sorted_spaces | selectattr('status','equalto','BUILD_ERROR') | list | length %}
+                <div class="owner-section">
+                    <div class="owner-name">
+                        <span class="floating">🌟 {{ owner }} 🌟</span>
+                        <span class="space-count">
+                            总数: {{ sorted_spaces | length }}
+                            <span class="space-status-count">运行:{{ running_count }}</span>
+                            <span class="space-status-count">休眠:{{ sleeping_count }}</span>
+                            <span class="space-status-count">停止:{{ stopped_count }}</span>
+                            <span class="space-status-count">失败:{{ failed_count }}</span>
+                        </span>
+                    </div>
+                    <div class="space-grid">
+                        {% for space in sorted_spaces %}
+                            <div class="space-card" data-space-id="{{ space.repo_id }}">
+                                <div class="space-name">💫 {{ space.name }}</div>
+                                <div class="space-info">
+                                    <p>ID: {{ space.repo_id }}</p>
+                                    <p>状态: <span class="status-badge status-{{ space.status }}">{{ space.status }}</span></p>
+                                    <p>创建时间: {{ space.created_at }}</p>
+                                    <p>最后修改: {{ space.last_modified }}</p>
+                                    <p>SDK: {{ space.sdk }}</p>
+                                    <p>App端口: {{ space.app_port }}</p>
+                                    {% if space.tags %}
+                                    <p>标签:
+                                        {% for tag in space.tags %}
+                                        <span class="tag">{{ tag }}</span>
+                                        {% endfor %}
+                                    </p>
+                                    {% endif %}
+                                    <p>私有: {{ '是' if space.private else '否' }}</p>
+                                </div>
+                                <div class="action-buttons">
+                                    <a href="{{ space.url }}" target="_blank" class="action-button view">查看</a>
+                                    <button onclick="confirmAction('restart', '{{ space.repo_id }}')" class="action-button restart">重启</button>
+                                    <button onclick="confirmAction('rebuild', '{{ space.repo_id }}')" class="action-button rebuild">重建</button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="owner-section">
+                <p style="text-align: center; color: #9966cc; padding: 2rem;">
+                    <span class="floating" style="display: inline-block; font-size: 3rem; margin-bottom: 1rem;">( ´•̥̥̥ω•̥̥̥` )</span><br>
+                    没有找到任何 Spaces。<br>请确保你的账户中有创建的Spaces，并且提供的 token 有正确的权限。
+                </p>
+            </div>
+        {% endif %}
+    </div>
+
+    <footer class="footer">
+        <a href="https://github.com/ssfun/hf-space-manager">✨ HF Space Manager ✨</a> 由 
+        <a href="https://github.com/ssfun">ssfun</a> 构建，源代码遵循
+        <a href="https://opensource.org/license/mit">MIT 协议</a>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        // 连接 WebSocket
+        const socket = io();
+
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Disconnected from server');
+        });
+
+        // 当收到缓存更新通知时刷新数据
+        socket.on('spaces_updated', (data) => {
+            updateSpaceStatuses();
+        });
+
+        // 页面可见性变化处理
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // 页面隐藏时断开连接
+                socket.disconnect();
+            } else {
+                // 页面可见时重新连接
+                socket.connect();
+            }
+        });
+        
+        // 页面加载完成后隐藏加载动画
+        window.addEventListener('load', function() {
+            document.getElementById('loading').style.display = 'none';
+        });
+
+        // 定期更新状态
+        function updateSpaceStatuses() {
+            document.querySelectorAll('.space-card').forEach(card => {
+                const spaceId = card.dataset.spaceId;
+                fetch(`/api/space/${spaceId}/status`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const statusElement = card.querySelector('.status-badge');
+                        if (statusElement && data.status) {
+                            statusElement.className = `status-badge status-${data.status}`;
+                            statusElement.textContent = data.status;
+                        }
+                    })
+                    .catch(error => console.error('Error updating status:', error));
+            });
+        }
+
+        // 在进行操作时显示加载动画
+        function confirmAction(action, spaceId) {
+            var actionText = action === 'restart' ? '重启' : '重建';
+            if (confirm(`确定要${actionText} "${spaceId}" 吗？`)) {
+                document.getElementById('loading').style.display = 'flex';
+                window.location.href = `/action/${action}/${spaceId}`;
+            }
+        }
+
+        // 每30秒更新一次状态
+        setInterval(updateSpaceStatuses, 30000);
+    </script>
+</body>
+</html>
